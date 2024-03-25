@@ -1,26 +1,27 @@
 from gensim import corpora, models, similarities
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer
+from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 import string
 import re
 
 # Sample responses
 responses = [
     "Hello!",
-    "How can I help you?",
-    "Hi, nice to meet you",
-    "Have a nice day!",
+    "hi, ada yang bisa saya bantu?",
+    "senang bertemu dengan anda",
+    "hari yang cerah",
     "Goodbye!",
-    "BPJS Employment is a legal entity formed to administer Work Accident Insurance, Old Age Security, Pension Security, Death Insurance and Job Loss Insurance programs which aim to provide complete protection to all workers in Indonesia.",
-    "The BPJS stand The JKN program has been running behind schedule since 2014. Before accounting for government intervention, the JKN deficit was worth IDR 1.9 trillion in 2014, 9.4 trillion in 2015, 6.7 trillion in 2016, 13.8 trillion in 2017, and 19.4 trillion in 2018.",
-    "The address of BPJS is Jl. Letjen Suprapto Kav. 20 No.14 Jakarta Pusat 10510, Telp. 021 421 2938",
+    "BPJS Ketenagakerjaan adalah badan hukum yang dibentuk untuk menyelenggarakan program Jaminan Kecelakaan Kerja, Jaminan Hari Tua, Jaminan Pensiun, Jaminan Kematian, dan Jaminan Kehilangan Pekerjaan yang bertujuan untuk memberikan perlindungan menyeluruh kepada seluruh pekerja di Indonesia.",
+    "BPJS Program JKN berdiri sejak tahun 2014. Sebelum memperhitungkan intervensi pemerintah, defisit JKN sebesar Rp1,9 triliun pada tahun 2014, 9,4 triliun pada tahun 2015, 6,7 triliun pada tahun 2016, 13,8 triliun pada tahun 2017, dan 19,4 triliun pada tahun 2014. 2018.",
+    "Alamat BPJS Jl. Letjen Suprapto Kav. 20 No.14 Jakarta Pusat 10510, Telp. 021 421 2938",
 ]
 
 # Preprocess responses
-stop_words = set(stopwords.words('english'))
-# stemmer = PorterStemmer() ## only good for indonesian
-lemmatizer = WordNetLemmatizer()
+stop_words = set(stopwords.words('indonesian'))
+factory = StemmerFactory()
+stemmer = factory.create_stemmer()
+
 def preprocess_text(text):
     # case folding
     text = text.lower()
@@ -35,11 +36,8 @@ def preprocess_text(text):
     # Remove stopwords and punctuation
     tokens = [token for token in tokens if token not in stop_words and token not in string.punctuation]
 
-    # stemmer good for indonesian language and fast but not good accuration for englis
-    #output = [stemmer.stem(token) for token in tokens]
-    #alternatif use lemmatization for english
-    # lemmatization
-    output = [lemmatizer.lemmatize(token) for token in tokens]
+
+    output =  [stemmer.stem(token) for token in tokens]
     return output
 
 processed_responses = [preprocess_text(response) for response in responses]
@@ -70,7 +68,7 @@ def get_most_similar_response(query):
     return responses[sims[0][0]]
 
 # Chat loop
-print("Bot: Hello! How can I help you?")
+print("Bot: Hello! ada yang bisa saya bantu?")
 while True:
     user_input = input("You: ")
     if user_input.lower() == 'exit':
